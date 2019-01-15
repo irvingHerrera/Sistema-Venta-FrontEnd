@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
+import es from 'vuetify/es5/locale/es'
 import 'vuetify/src/stylus/app.styl'
 
 Vue.use(Vuetify, {
@@ -14,4 +15,8 @@ Vue.use(Vuetify, {
     },
     customProperties: true,
     iconfont: 'md',
+    lang: {
+        locales: { es },
+        current: 'es'
+    }
 })
