@@ -28,6 +28,11 @@
                   <v-flex xs12 sm12 md12>
                     <v-text-field v-model="descripcion" label="Descripción"></v-text-field>
                   </v-flex>
+                  <v-flex xs12 sm12 md12 v-show="valida">
+                   <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
+
+                   </div>
+                  </v-flex>
                 </v-layout>
               </v-container>
             </v-card-text>
@@ -38,6 +43,30 @@
               <v-btn color="blue darken-1" flat @click="guardar">Guardar</v-btn>
             </v-card-actions>
           </v-card>
+        </v-dialog>
+        <v-dialog v-model="adModal" max-width="400px">
+            <v-card>
+                <v-card-title class="headline" v-if="adAccion==1">¿Activar Categoría?</v-card-title>
+                <v-card-title class="headline" v-if="adAccion==2">Desactivar Categoría?</v-card-title>
+                <v-card-text>
+                    Estás a punto de 
+                    <span v-if="adAccion==1">Activar</span>
+                    <span v-if="adAccion==2">Desactivar</span>
+                    el item {{ adNombre }}
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" flat="flat" @click="activarDesactivarCerrar">
+                        Cancelar
+                    </v-btn>
+                    <v-btn v-if="adAccion==1" color="orange darken-4" flat="flat" @click="activar">
+                        Activar
+                    </v-btn>
+                    <v-btn v-if="adAccion==2" color="orange darken-4" flat="flat" @click="desactivar">
+                        Desactivar
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
         </v-dialog>
       </v-toolbar>
       <v-data-table
@@ -55,12 +84,21 @@
                 >
                 edit
                 </v-icon>
-                <v-icon
-                small
-                @click="deleteItem(props.item)"
-                >
-                delete
-                </v-icon>
+                <template v-if="props.item.condicion">
+                    <v-icon
+                        small
+                        @click="activarDesactivarMostrar(2, props.item)">
+                        block
+                    </v-icon>
+                </template>
+                <template v-else>
+                    <v-icon
+                        small
+                        @click="activarDesactivarMostrar(1, props.item)">
+                        check
+                    </v-icon>
+                </template>
+                
           </td>
           <td>{{ props.item.nombre }}</td>
           <td>{{ props.item.descripcion }}</td>
@@ -98,16 +136,15 @@ export default {
             ],
             search: '',
             editedIndex: -1,
-            editedItem: {
-                name: '',
-                calories: 0,
-                fat: 0,
-                carbs: 0,
-                protein: 0
-            },
             id: '',
             nombre: '',
-            descripcion: ''
+            descripcion: '',
+            valida: 0,
+            validaMensaje: [],
+            adModal: 0,
+            adAccion: 0,
+            adNombre: '',
+            adId: '',
         }
     },
         computed: {
@@ -126,20 +163,22 @@ export default {
         this.listar();
     },
     methods: {
+        /* eslint-disable */
         listar() {
             let me = this;
             axios.get('api/Categorias/Listar')
             .then(function (resp) {
                 me.categorias = resp.data;
-                console.log(resp);
-                console.log(me.categorias);
             }).catch( function (error) {
                 console.log(error);
+                console.log('test');
             }) 
         }, 
             editItem (item) {
-                this.editedIndex = this.desserts.indexOf(item)
-                this.editedItem = Object.assign({}, item)
+                this.id = item.idCategoria;
+                this.nombre = item.nombre;
+                this.descripcion = item.descripcion;
+                this.editedIndex = 1;
                 this.dialog = true
             },
 
@@ -150,34 +189,125 @@ export default {
 
             close () {
                 this.dialog = false;
+                this.limpiar();
             },
 
             limpiar() {
                 this.id = '';
                 this.nombre = '';
+                this.descripcion = '';
                 this.deleteItem =  '';
+                this.valida = 0;
+                this.editedIndex = -1;
             },
 
             guardar () {
+
+                if( this.validar() === 1 ) {
+                    return;
+                }
+
+                let promesa = {};
+                let me = this;
+
                 if (this.editedIndex > -1) {
                     // codigo para editar
-                } else {
-                    // codigo para guardar
-                    let me = this;
-                    axios.post('api/Categorias/Crear', { 
+                    
+                    promesa = axios.put('api/Categorias/Actualizar', { 
+                        'idCategoria': me.id,
                         'nombre': me.nombre,
                         'descripcion': me.descripcion
-                     })
-                    .then(function (response) {
-                        console.log(response);
+                     });
+                } else {
+                    // codigo para guardar
+                    promesa = axios.post('api/Categorias/Crear', { 
+                        'nombre': me.nombre,
+                        'descripcion': me.descripcion
+                     });
+                    
+                }
+
+                promesa
+                .then(function (response) {
+                    // eslint-disable-next-line
+                        console.log("response", response);
                         me.close();
                         me.listar();
-                        me.limpiar();
+                })
+                // eslint-disable-next-line
+                .catch(function (error) {
+                    // eslint-disable-next-line
+                    console.log(error);
+                });
+            },
+            validar() {
+
+                this.valida = 0;
+                this.validaMensaje = [];
+                if( this.nombre.length < 3 || this.nombre.length > 50 ) {
+                    this.validaMensaje.push('El nombre debe tener mas de 3 caracteres y menos de 50 caracteres');
+                }
+
+                if( this.validaMensaje.length ) {
+                    this.valida = 1;
+                }
+
+                return this.valida;
+            },
+            activarDesactivarMostrar( accion, item ) {
+
+                this.adModal = 1;
+                this.adNombre = item.nombre;
+                this.adId = item.idCategoria
+
+                if ( accion === 1 ) {
+                    this.adAccion = 1;
+                } else if ( accion === 2 ) {
+                    this.adAccion = 2;
+                } else  {
+                    this.adModal = 0;
+                }
+            },
+            activar () {
+                let me = this;
+                axios
+                .put('api/Categorias/Activar/'+this.adId, { })
+                     .then(function (response) {
+                    // eslint-disable-next-line
+                        console.log("response", response);
+                        me.adModal = 0;
+                        me.adAccion = 0;
+                        me.adNombre = '';
+                        me.adId = '';
+                        me.listar();
                     })
+                    // eslint-disable-next-line
                     .catch(function (error) {
+                        // eslint-disable-next-line
                         console.log(error);
                     });
-                }
+            },
+            desactivar() {
+                let me = this;
+                axios
+                .put('api/Categorias/Desactivar/'+this.adId, { })
+                     .then(function (response) {
+                    // eslint-disable-next-line
+                        console.log("response", response);
+                        me.adModal = 0;
+                        me.adAccion = 0;
+                        me.adNombre = '';
+                        me.adId = '';
+                        me.listar();
+                    })
+                    // eslint-disable-next-line
+                    .catch(function (error) {
+                        // eslint-disable-next-line
+                        console.log(error);
+                    });
+            },
+            activarDesactivarCerrar() {
+                this.adModal = 0;
             }
     }
 }
