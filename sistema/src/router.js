@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import Categoria from './components/Categoria.vue';
 import Articulo from './components/Articulo.vue';
+import Rol from './components/Rol.vue';
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
             path: '/articulos',
             name: 'articulos',
             component: Articulo
+        },
+        {
+            path: '/roles',
+            name: 'rol',
+            component: Rol
         },
     ]
 })
