@@ -169,7 +169,7 @@ export default {
             roles: [],
             tipoDocumento: '',
             documentos: [
-                'IFE', 'CEDULA', 'CARTILLA', 'PASAPORTE'
+                'INE', 'CEDULA', 'CARTILLA', 'PASAPORTE'
             ],
             numDocumento: '',
             direccion: '',
@@ -178,6 +178,7 @@ export default {
             password: '',
             nombre: '',
             actPassword: false,
+            passwordAnt: '',
             valida: 0,
             validaMensaje: [],
             adModal: 0,
@@ -229,13 +230,18 @@ export default {
             }) 
         }, 
             editItem (item) {
-                this.id = item.idArticulo;
-                this.idCategoria = item.idCategoria,
-                this.codigo = item.codigo,
+                console.log(item);
+                this.id = item.idUsuario;
+                this.idRol = item.idRol,
                 this.nombre = item.nombre;
+                this.tipoDocumento = item.tipoDocumento;
+                this.numDocumento = item.numDocumento;
+                this.direccion = item.direccion;
+                this.telefono = item.telefono;
+                this.email = item.email;
+                this.password = item.passwordHash;
+                this.passwordAnt = item.passwordHash;
                 this.stock = item.stock;
-                this.precioVenta = item.precioVenta;
-                this.descripcion = item.descripcion;
                 this.editedIndex = 1;
                 this.dialog = true
             },
@@ -260,6 +266,8 @@ export default {
                 this.telefono = '';
                 this.email = '';
                 this.password = '';
+                this.passwordAnt = '';
+                this.actPassword = false;
                 this.deleteItem =  '';
                 this.valida = 0;
                 this.editedIndex = -1;
@@ -277,19 +285,26 @@ export default {
                 if (this.editedIndex > -1) {
                     // codigo para editar
                     
+                    if ( me.password !== me.passwordAnt ) {
+                        me.actPassword = true;
+                    }
+
                     promesa = axios.put('api/Usuario/Actualizar', { 
-                        'idArticulo': me.id,
-                        'idCategoria': me.idCategoria,
-                        'codigo': me.codigo,
+                        'idUsuario': me.id,
+                        'idRol': me.idRol,
+                        'tipoDocumento': me.tipoDocumento,
+                        'numDocumento': me.numDocumento,
                         'nombre': me.nombre,
-                        'stock': me.stock,
-                        'precioVenta': me.precioVenta,
-                        'descripcion': me.descripcion
+                        'direccion': me.direccion,
+                        'telefono': me.telefono,
+                        'email': me.email,
+                        'password': me.password,
+                        'act_password': me.actPassword
                      });
                 } else {
                     // codigo para guardar
                     promesa = axios.post('api/Usuario/Crear', { 
-                        'idArticulo': '0',
+                        'idUsuario': '0',
                         'idRol': me.idRol,
                         'tipoDocumento': me.tipoDocumento,
                         'numDocumento': me.numDocumento,
