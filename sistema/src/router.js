@@ -4,6 +4,7 @@ import Home from './views/Home.vue';
 import Categoria from './components/Categoria.vue';
 import Articulo from './components/Articulo.vue';
 import Rol from './components/Rol.vue';
+import Usuario from './components/Usuario.vue';
 
 Vue.use(Router)
 
@@ -29,6 +30,11 @@ export default new Router({
             path: '/roles',
             name: 'rol',
             component: Rol
+        },
+        {
+            path: '/usuarios',
+            name: 'usuario',
+            component: Usuario
         },
     ]
 })
