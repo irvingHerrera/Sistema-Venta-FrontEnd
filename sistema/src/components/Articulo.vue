@@ -3,7 +3,7 @@
     <v-layout align-start>
         <v-flex>
                   <v-toolbar flat color="white">
-        <v-toolbar-title>Categorias</v-toolbar-title>
+        <v-toolbar-title>Articulos</v-toolbar-title>
         <v-divider
           class="mx-2"
           inset
@@ -22,8 +22,20 @@
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout wrap>
+                  <v-flex xs6 sm6 md6>
+                    <v-text-field v-model="codigo" label="Código"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6 sm6 md6>
+                    <v-select v-model="idCategoria" :items="categorias" lable="Categorías"></v-select>
+                  </v-flex>
                   <v-flex xs12 sm12 md12>
                     <v-text-field v-model="nombre" label="Nombre"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6 sm6 md6>
+                    <v-text-field type="number" v-model="stock" label="Stock"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6 sm6 md6>
+                    <v-text-field type="number" v-model="precioVenta" label="Precio Venta"></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm12 md12>
                     <v-text-field v-model="descripcion" label="Descripción"></v-text-field>
@@ -46,13 +58,13 @@
         </v-dialog>
         <v-dialog v-model="adModal" max-width="400px">
             <v-card>
-                <v-card-title class="headline" v-if="adAccion==1">¿Activar Categoría?</v-card-title>
-                <v-card-title class="headline" v-if="adAccion==2">Desactivar Categoría?</v-card-title>
+                <v-card-title class="headline" v-if="adAccion==1">¿Activar Articulo?</v-card-title>
+                <v-card-title class="headline" v-if="adAccion==2">Desactivar Articulo?</v-card-title>
                 <v-card-text>
                     Estás a punto de 
                     <span v-if="adAccion==1">Activar</span>
                     <span v-if="adAccion==2">Desactivar</span>
-                    la categoria {{ adNombre }}
+                    el articulo {{ adNombre }}
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -71,7 +83,7 @@
       </v-toolbar>
       <v-data-table
         :headers="headers"
-        :items="categorias"
+        :items="articulos"
         :search="search"
         class="elevation-1"
       >
@@ -100,7 +112,11 @@
                 </template>
                 
           </td>
+          <td>{{ props.item.codigo }}</td>
           <td>{{ props.item.nombre }}</td>
+          <td>{{ props.item.categoria }}</td>
+          <td>{{ props.item.stock }}</td>
+          <td>{{ props.item.precioVenta }}</td>
           <td>{{ props.item.descripcion }}</td>
           <td>
               <div v-if=" props.item.condicion">
@@ -126,18 +142,27 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            categorias:[],
+            articulos:[],
             dialog: false,
             headers: [
-            { text: 'Opciones', value: 'opciones', sortable: false },
-            { text: 'Nombre', value: 'nombre' },
-            { text: 'Descripción', value: 'descripcion', sortable: false },
-            { text: 'Estado', value: 'condicion', sortable: false },
+                { text: 'Opciones', value: 'opciones', sortable: false },
+                { text: 'Código', value: 'codigo' },
+                { text: 'Nombre', value: 'nombre', sortable: false },
+                { text: 'Categoria', value: 'categoria', sortable: false },
+                { text: 'Stock', value: 'stock', sortable: false },
+                { text: 'Precio Venta', value: 'precioVenta', sortable: false },
+                { text: 'Descripción', value: 'descripcion', sortable: false },
+                { text: 'Estado', value: 'condicion', sortable: false },
             ],
             search: '',
             editedIndex: -1,
             id: '',
+            idCategoria: '',
+            categorias: [],
+            codigo: '',
             nombre: '',
+            stock: 0,
+            precioVenta: 0,
             descripcion: '',
             valida: 0,
             validaMensaje: [],
@@ -149,7 +174,7 @@ export default {
     },
         computed: {
         formTitle () {
-        return this.editedIndex === -1 ? 'Nueva categoría' : 'Actualizando categoria'
+        return this.editedIndex === -1 ? 'Nueva Articulo' : 'Actualizando Articulo'
         }
     },
 
@@ -161,22 +186,41 @@ export default {
 
     created () {
         this.listar();
+        this.select();
     },
     methods: {
         /* eslint-disable */
         listar() {
             let me = this;
-            axios.get('api/Categorias/Listar')
+            axios.get('api/Articulo/Listar')
             .then(function (resp) {
-                me.categorias = resp.data;
+                me.articulos = resp.data;
+                console.log(resp);
             }).catch( function (error) {
                 console.log(error);
-                console.log('test');
+            }) 
+        }, 
+        select() {
+            let me = this;
+            let categoriaArray = [];
+            axios.get('api/Categorias/Select')
+            .then(function (resp) {
+                categoriaArray = resp.data;
+                categoriaArray.map(function(cat) {
+                    me.categorias.push({text: cat.nombre, value: cat.idCategoria});
+                });
+                console.log(resp);
+            }).catch( function (error) {
+                console.log(error);
             }) 
         }, 
             editItem (item) {
-                this.id = item.idCategoria;
+                this.id = item.idArticulo;
+                this.idCategoria = item.idCategoria,
+                this.codigo = item.codigo,
                 this.nombre = item.nombre;
+                this.stock = item.stock;
+                this.precioVenta = item.precioVenta;
                 this.descripcion = item.descripcion;
                 this.editedIndex = 1;
                 this.dialog = true
@@ -194,7 +238,11 @@ export default {
 
             limpiar() {
                 this.id = '';
+                this.idCategoria = '';
+                this.codigo = '';
                 this.nombre = '';
+                this.stock = '';
+                this.precioVenta = '';
                 this.descripcion = '';
                 this.deleteItem =  '';
                 this.valida = 0;
@@ -213,15 +261,24 @@ export default {
                 if (this.editedIndex > -1) {
                     // codigo para editar
                     
-                    promesa = axios.put('api/Categorias/Actualizar', { 
-                        'idCategoria': me.id,
+                    promesa = axios.put('api/Articulo/Actualizar', { 
+                        'idArticulo': me.id,
+                        'idCategoria': me.idCategoria,
+                        'codigo': me.codigo,
                         'nombre': me.nombre,
+                        'stock': me.stock,
+                        'precioVenta': me.precioVenta,
                         'descripcion': me.descripcion
                      });
                 } else {
                     // codigo para guardar
-                    promesa = axios.post('api/Categorias/Crear', { 
+                    promesa = axios.post('api/Articulo/Crear', { 
+                        'idArticulo': '0',
+                        'idCategoria': me.idCategoria,
+                        'codigo': me.codigo,
                         'nombre': me.nombre,
+                        'stock': me.stock,
+                        'precioVenta': me.precioVenta,
                         'descripcion': me.descripcion
                      });
                     
@@ -245,7 +302,19 @@ export default {
                 this.valida = 0;
                 this.validaMensaje = [];
                 if( this.nombre.length < 3 || this.nombre.length > 50 ) {
-                    this.validaMensaje.push('El nombre debe tener mas de 3 caracteres y menos de 50 caracteres');
+                    this.validaMensaje.push('El nombre debe tener mas de 3 caracteres y menos de 50 caracteres.');
+                }
+
+                if( !this.idCategoria ) {
+                    this.validaMensaje.push('Seleccione una categoría.');
+                }
+
+                if( !this.stock || this.stock === 0 ) {
+                    this.validaMensaje.push('Ingrese el stock inicial del prodecto.');
+                }
+
+                if( !this.precioVenta || this.precioVenta === 0 ) {
+                    this.validaMensaje.push('Ingrese el precio de venta del producto.');
                 }
 
                 if( this.validaMensaje.length ) {
