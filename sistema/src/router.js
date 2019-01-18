@@ -6,6 +6,7 @@ import Articulo from './components/Articulo.vue';
 import Rol from './components/Rol.vue';
 import Usuario from './components/Usuario.vue';
 import Cliente from './components/Cliente.vue';
+import Proveedor from './components/Proveedor.vue';
 
 Vue.use(Router)
 
@@ -41,6 +42,11 @@ export default new Router({
             path: '/clientes',
             name: 'cliente',
             component: Cliente
+        },
+        {
+            path: '/proveedor',
+            name: 'proveedor',
+            component: Proveedor
         },
     ]
 })
