@@ -366,7 +366,7 @@ export default {
 
                 this.adModal = 1;
                 this.adNombre = item.nombre;
-                this.adId = item.idArticulo
+                this.adId = item.idUsuario
 
                 if ( accion === 1 ) {
                     this.adAccion = 1;
@@ -379,7 +379,7 @@ export default {
             activar () {
                 let me = this;
                 axios
-                .put('api/Articulo/Activar/'+this.adId, { })
+                .put('api/Usuario/Activar/'+this.adId, { })
                      .then(function (response) {
                     // eslint-disable-next-line
                         console.log("response", response);
@@ -398,7 +398,7 @@ export default {
             desactivar() {
                 let me = this;
                 axios
-                .put('api/Articulo/Desactivar/'+this.adId, { })
+                .put('api/Usuario/Desactivar/'+this.adId, { })
                      .then(function (response) {
                     // eslint-disable-next-line
                         console.log("response", response);
