@@ -24,13 +24,29 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     data() {
         return {
             email: '',
             password: ''
         }
-    }
+    },
+    methods: {
+            ingresar() {
+                axios.post('api/Usuario/Login', { email: this.email, password: this.password })
+                .then( respuesta => {
+                    return respuesta.data;
+                })
+                .then(data => {
+                    this.$store.dispatch('guradarToken', data.token);
+                    this.$router.push({name: 'home'});
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+            }
+        }
 }
 </script>
 
