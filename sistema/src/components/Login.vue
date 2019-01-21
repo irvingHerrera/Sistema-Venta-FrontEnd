@@ -13,9 +13,7 @@
                 </v-card-text>
                 <v-card-actions class="px-3 pb-3">
                     <v-flex text-xs-rigth>
-                        <v-btn color="primary">
-                            Ingresar
-                        </v-btn>
+                        <v-btn @click="ingresar" color="primary">Ingresar</v-btn>
                     </v-flex>
                 </v-card-actions>
             </v-card>
@@ -39,10 +37,11 @@ export default {
                     return respuesta.data;
                 })
                 .then(data => {
-                    this.$store.dispatch('guradarToken', data.token);
-                    this.$router.push({name: 'home'});
+                    this.$store.dispatch('guardarToken', data.token);   
+                    this.$router.push({ name: 'home' })
                 })
                 .catch(err => {
+                    // eslint-disable-next-line
                     console.log(err);
                 });
             }

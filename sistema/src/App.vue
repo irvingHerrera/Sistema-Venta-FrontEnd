@@ -5,9 +5,10 @@
       v-model="drawer"
       fixed
       app
+      v-if="logueado"
     >
       <v-list dense>
-        <template>
+        <template v-if="esAdministrador || esAlmacenero || esVendedor">
           <v-list-tile :to="{ name: 'home'}">
             <v-list-tile-action>
               <v-icon>home</v-icon>
@@ -17,7 +18,7 @@
             </v-list-tile-title>
           </v-list-tile>          
         </template>
-        <template>
+        <template v-if="esAdministrador || esAlmacenero">
             <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -48,7 +49,7 @@
             </v-list-tile>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador || esAlmacenero">
             <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -79,7 +80,7 @@
             </v-list-tile>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador || esVendedor">
             <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -110,7 +111,7 @@
             </v-list-tile>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador">
             <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -141,7 +142,7 @@
             </v-list-tile>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador">
             <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -222,6 +223,26 @@ export default {
       //
        drawer: null,
     }
+  },
+  computed: {
+    logueado() {
+      return this.$store.state.usuario;
+    },
+    esAdministrador() {
+      return this.$store.state.usuario && this.$store.state.usuario.rol == 'Administrador';
+    },
+    esAlmacenero() {
+      return this.$store.state.usuario && this.$store.state.usuario.rol == 'Almacenero';
+    },
+    esVendedor() {
+      return this.$store.state.usuario && this.$store.state.usuario.rol == 'Vendedor';
+    }
+  },
+  created() {
+    this.$store.dispatch('autoLogin');
+  },
+  methods: {
+
   }
 }
 </script>
