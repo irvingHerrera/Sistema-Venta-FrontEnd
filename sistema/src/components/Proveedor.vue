@@ -149,7 +149,9 @@ export default {
         /* eslint-disable */
         listar() {
             let me = this;
-            axios.get('api/Persona/ListarProvedor')
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+            axios.get('api/Persona/ListarProvedor', configuracion)
             .then(function (resp) {
                 me.proveedores = resp.data;
                 console.log(resp);
@@ -200,6 +202,8 @@ export default {
 
                 let promesa = {};
                 let me = this;
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
 
                 if (this.editedIndex > -1) {
                     // codigo para editar
@@ -213,7 +217,7 @@ export default {
                         'direccion': me.direccion,
                         'telefono': me.telefono,
                         'email': me.email,
-                     });
+                     }, configuracion);
                 } else {
                     // codigo para guardar
                     promesa = axios.post('api/Persona/Crear', { 
@@ -225,7 +229,7 @@ export default {
                         'direccion': me.direccion,
                         'telefono': me.telefono,
                         'email': me.email,
-                     });
+                     }, configuracion);
                     
                 }
 

@@ -166,7 +166,9 @@ export default {
         /* eslint-disable */
         listar() {
             let me = this;
-            axios.get('api/Categorias/Listar')
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+            axios.get('api/Categorias/Listar', configuracion)
             .then(function (resp) {
                 me.categorias = resp.data;
             }).catch( function (error) {
@@ -210,6 +212,9 @@ export default {
                 let promesa = {};
                 let me = this;
 
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
+            
                 if (this.editedIndex > -1) {
                     // codigo para editar
                     
@@ -217,13 +222,13 @@ export default {
                         'idCategoria': me.id,
                         'nombre': me.nombre,
                         'descripcion': me.descripcion
-                     });
+                     }, configuracion);
                 } else {
                     // codigo para guardar
                     promesa = axios.post('api/Categorias/Crear', { 
                         'nombre': me.nombre,
                         'descripcion': me.descripcion
-                     });
+                     }, configuracion);
                     
                 }
 
@@ -270,8 +275,12 @@ export default {
             },
             activar () {
                 let me = this;
+
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
+
                 axios
-                .put('api/Categorias/Activar/'+this.adId, { })
+                .put('api/Categorias/Activar/'+this.adId, { }, configuracion)
                      .then(function (response) {
                     // eslint-disable-next-line
                         console.log("response", response);
@@ -289,8 +298,12 @@ export default {
             },
             desactivar() {
                 let me = this;
+
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
+
                 axios
-                .put('api/Categorias/Desactivar/'+this.adId, { })
+                .put('api/Categorias/Desactivar/'+this.adId, { }, configuracion)
                      .then(function (response) {
                     // eslint-disable-next-line
                         console.log("response", response);

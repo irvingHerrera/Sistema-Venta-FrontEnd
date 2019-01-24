@@ -207,7 +207,9 @@ export default {
         /* eslint-disable */
         listar() {
             let me = this;
-            axios.get('api/Usuario/Listar')
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+            axios.get('api/Usuario/Listar', configuracion)
             .then(function (resp) {
                 me.usuarios = resp.data;
                 console.log(resp);
@@ -218,7 +220,9 @@ export default {
         select() {
             let me = this;
             let rolArray = [];
-            axios.get('api/Rol/Select')
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+            axios.get('api/Rol/Select', configuracion)
             .then(function (resp) {
                 rolArray = resp.data;
                 rolArray.map(function(cat) {
@@ -282,6 +286,9 @@ export default {
                 let promesa = {};
                 let me = this;
 
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
+
                 if (this.editedIndex > -1) {
                     // codigo para editar
                     
@@ -300,7 +307,7 @@ export default {
                         'email': me.email,
                         'password': me.password,
                         'act_password': me.actPassword
-                     });
+                     }, configuracion);
                 } else {
                     // codigo para guardar
                     promesa = axios.post('api/Usuario/Crear', { 
@@ -313,7 +320,7 @@ export default {
                         'telefono': me.telefono,
                         'email': me.email,
                         'password': me.password
-                     });
+                     }, configuracion);
                     
                 }
 
@@ -378,8 +385,12 @@ export default {
             },
             activar () {
                 let me = this;
+
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
+
                 axios
-                .put('api/Usuario/Activar/'+this.adId, { })
+                .put('api/Usuario/Activar/'+this.adId, { }, configuracion)
                      .then(function (response) {
                     // eslint-disable-next-line
                         console.log("response", response);
@@ -397,8 +408,12 @@ export default {
             },
             desactivar() {
                 let me = this;
+
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
+
                 axios
-                .put('api/Usuario/Desactivar/'+this.adId, { })
+                .put('api/Usuario/Desactivar/'+this.adId, { }, configuracion)
                      .then(function (response) {
                     // eslint-disable-next-line
                         console.log("response", response);

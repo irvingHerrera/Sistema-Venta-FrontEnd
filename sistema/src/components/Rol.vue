@@ -67,7 +67,9 @@ export default {
         /* eslint-disable */
         listar() {
             let me = this;
-            axios.get('api/Rol/Listar')
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+            axios.get('api/Rol/Listar', configuracion                           )
             .then(function (resp) {
                 me.roles = resp.data;
             }).catch( function (error) {

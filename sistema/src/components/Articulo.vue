@@ -192,7 +192,11 @@ export default {
         /* eslint-disable */
         listar() {
             let me = this;
-            axios.get('api/Articulo/Listar')
+
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+
+            axios.get('api/Articulo/Listar', configuracion)
             .then(function (resp) {
                 me.articulos = resp.data;
                 console.log(resp);
@@ -203,7 +207,12 @@ export default {
         select() {
             let me = this;
             let categoriaArray = [];
-            axios.get('api/Categorias/Select')
+
+
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+
+            axios.get('api/Categorias/Select', configuracion)
             .then(function (resp) {
                 categoriaArray = resp.data;
                 categoriaArray.map(function(cat) {
@@ -258,6 +267,9 @@ export default {
                 let promesa = {};
                 let me = this;
 
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
+
                 if (this.editedIndex > -1) {
                     // codigo para editar
                     
@@ -269,7 +281,7 @@ export default {
                         'stock': me.stock,
                         'precioVenta': me.precioVenta,
                         'descripcion': me.descripcion
-                     });
+                     }, configuracion);
                 } else {
                     // codigo para guardar
                     promesa = axios.post('api/Articulo/Crear', { 
@@ -280,7 +292,7 @@ export default {
                         'stock': me.stock,
                         'precioVenta': me.precioVenta,
                         'descripcion': me.descripcion
-                     });
+                     }, configuracion);
                     
                 }
 
@@ -339,8 +351,12 @@ export default {
             },
             activar () {
                 let me = this;
+
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
+
                 axios
-                .put('api/Articulo/Activar/'+this.adId, { })
+                .put('api/Articulo/Activar/'+this.adId, configuracion)
                      .then(function (response) {
                     // eslint-disable-next-line
                         console.log("response", response);
@@ -358,8 +374,12 @@ export default {
             },
             desactivar() {
                 let me = this;
+                
+                let header={'Authorization': 'Bearer ' + this.$store.state.token};
+                let configuracion = {headers: header};
+
                 axios
-                .put('api/Articulo/Desactivar/'+this.adId, { })
+                .put('api/Articulo/Desactivar/'+this.adId, { }, configuracion)
                      .then(function (response) {
                     // eslint-disable-next-line
                         console.log("response", response);
