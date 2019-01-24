@@ -10,58 +10,9 @@
           vertical
         ></v-divider>
         <v-spacer></v-spacer>
-        <v-text-field class="text-xs-center" v-model="search" append-icon="search" label="Búsqueda" single-line hide-details></v-text-field>
+        <v-text-field v-if="verNuevo===0" class="text-xs-center" v-model="search" append-icon="search" label="Búsqueda" single-line hide-details></v-text-field>
         <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="500px">
-          <v-btn slot="activator" color="primary" dark class="mb-2">Nuevo</v-btn>
-          <v-card>
-            <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
-            </v-card-title>
-  
-            <v-card-text>
-              <v-container grid-list-md>
-                <v-layout wrap>
-                  <v-flex xs12 sm6 md6>
-                    <v-text-field v-model="nombre" label="Nombre"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6>
-                    <v-select v-model="idRol" :items="roles" lable="Rol"></v-select>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6>
-                    <v-select v-model="tipoDocumento" :items="documentos" lable="Tipo Documento"></v-select>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6>
-                    <v-text-field v-model="numDocumento" label="Numero Documento"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6>
-                    <v-text-field v-model="direccion" label="Dirección"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6>
-                    <v-text-field v-model="telefono" label="Telefono"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6>
-                    <v-text-field v-model="email" label="Correo"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6>
-                    <v-text-field type="password" v-model="password" label="Contraseña"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm12 md12 v-show="valida">
-                   <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
-
-                   </div>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-card-text>
-  
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat @click="close">Cancelar</v-btn>
-              <v-btn color="blue darken-1" flat @click="guardar">Guardar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+         <v-btn v-if="verNuevo===0" @click="mostrarNuevo" color="primary" dark class="mb-2">Nuevo</v-btn>
         <v-dialog v-model="adModal" max-width="400px">
             <v-card>
                 <v-card-title class="headline" v-if="adAccion==1">¿Activar Usuario?</v-card-title>
@@ -92,6 +43,7 @@
         :items="ingresos"
         :search="search"
         class="elevation-1"
+        v-if="verNuevo===0"
       >
         <template slot="items" slot-scope="props">
             <td class="justify-center layout px-0">
@@ -140,7 +92,7 @@
           <v-btn color="primary" @click="listar">Resetear</v-btn>
         </template>
       </v-data-table>
-      <v-container grid-list-sm class="pa-4 white" style="padding-top:15px">
+      <v-container grid-list-sm class="pa-4 white" style="padding-top:15px" v-if="verNuevo">
           <v-layout row wrap>
               <v-flex xs12 sm4 md4 lg4 x14>
                   <v-select v-model="tipoComprobante"
@@ -201,6 +153,16 @@
                         </template>
                     </v-data-table>
               </v-flex>
+
+            <v-flex xs12 sm12 md12 lg12 x112>
+                <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
+            </v-flex>
+            
+            <v-flex xs12 sm12 md12 lg12 x112>
+                <v-btn @click="ocultarNuevo" color="blue darken-1" flat>Cancelar</v-btn>
+                <v-btn color="success">Guardar</v-btn>
+            </v-flex>
+
           </v-layout>
       </v-container>
         </v-flex>
@@ -252,6 +214,7 @@ export default {
             numComprobante: '',
             impuesto: 18,
             codigo: '',
+            verNuevo: 0,
             nombre: '',
             valida: 0,
             validaMensaje: [],
@@ -279,6 +242,13 @@ export default {
     },
     methods: {
         /* eslint-disable */
+
+        mostrarNuevo() {
+            this.verNuevo = 1;
+        },
+        ocultarNuevo() {
+            this.verNuevo = 0;
+        },
         listar() {
             let me = this;
             let header={'Authorization': 'Bearer ' + this.$store.state.token};
