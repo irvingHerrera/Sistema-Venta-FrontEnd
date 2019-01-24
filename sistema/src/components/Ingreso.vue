@@ -117,7 +117,7 @@
                   </v-text-field>
               </v-flex>
               <v-flex xs12 sm8 md8 lg8 x18>
-                  <v-text-field v-model="codigo" 
+                  <v-text-field @keyup.enter="buscarCodigo()" v-model="codigo" 
                                 label="Código">
                   </v-text-field>
               </v-flex>
@@ -125,6 +125,11 @@
                   <v-btn small fab dark color="teal">
                       <v-icon dark>list</v-icon>
                   </v-btn>
+              </v-flex>
+               <v-flex xs12 sm2 md2 lg2 x12 v-if="errorArticulo">
+                  <div class="red--text" v-text="errorArticulo">
+
+                  </div>
               </v-flex>
               <v-flex xs12 sm12 md12 lg12 x112>
                         <v-data-table
@@ -155,7 +160,7 @@
               </v-flex>
 
             <v-flex xs12 sm12 md12 lg12 x112>
-                <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
+                <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v"></div>
             </v-flex>
             
             <v-flex xs12 sm12 md12 lg12 x112>
@@ -212,9 +217,11 @@ export default {
             ],
             serieComprobante: '',
             numComprobante: '',
+            tipoComprobante: '',
             impuesto: 18,
             codigo: '',
             verNuevo: 0,
+            errorArticulo: null,
             nombre: '',
             valida: 0,
             validaMensaje: [],
@@ -249,6 +256,22 @@ export default {
         ocultarNuevo() {
             this.verNuevo = 0;
         },
+        buscarCodigo() {
+            let me = this;
+            me.errorArticulo = null;
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+            axios.get('api/Articulo/BuscarCodigoIngreso/'+this.codigo, configuracion)
+            .then(function (resp) {
+                console.log(resp);
+            }).catch( function (error) {
+                console.log(error);
+                me.errorArticulo = 'No existe el articulo';
+            }) 
+        }, 
+        agregarDetalle(data = []) {
+
+        },
         listar() {
             let me = this;
             let header={'Authorization': 'Bearer ' + this.$store.state.token};
@@ -256,7 +279,6 @@ export default {
             axios.get('api/Ingreso/Listar', configuracion)
             .then(function (resp) {
                 me.ingresos = resp.data;
-                console.log(resp);
             }).catch( function (error) {
                 console.log(error);
             }) 
