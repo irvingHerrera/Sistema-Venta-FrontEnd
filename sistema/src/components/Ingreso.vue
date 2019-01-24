@@ -143,6 +143,7 @@
                                 <v-icon
                                 small
                                 class="mr-2"
+                                @click="eliminarDetalle(detalles, props.item)"
                                 >
                                 delete
                                 </v-icon>
@@ -203,8 +204,6 @@ export default {
 
             ],
             detalles: [
-                {idAticulo:'1000', articulo:'Articulo 1', cantidad:'5', precio:'10'},
-                {idAticulo:'2000', articulo:'Articulo 2', cantidad:'5', precio:'20'},
             ],
             search: '',
             editedIndex: -1,
@@ -263,14 +262,43 @@ export default {
             let configuracion = {headers: header};
             axios.get('api/Articulo/BuscarCodigoIngreso/'+this.codigo, configuracion)
             .then(function (resp) {
-                console.log(resp);
+                me.agregarDetalle(resp.data);
             }).catch( function (error) {
                 console.log(error);
                 me.errorArticulo = 'No existe el articulo';
             }) 
         }, 
         agregarDetalle(data = []) {
+            this.errorArticulo = null;
+            if( this.encuentra(data['idArticulo']) ) {
+                this.errorArticulo = 'El articulo ya ha sido agregado';
+            } else {
+                this.detalles.push(
+                {
+                    idArticulo: data['idArticulo'],
+                    articulo: data['nombre'],
+                    cantidad: 1,
+                    precio: 1
+                }
+            );
+            }
+        },
+        encuentra(id) {
+            var sw = 0;
 
+            for(var i=0; i<this.detalles.length;i++) {
+                if (this.detalles[i].idArticulo === id) {
+                    sw = 1;
+                }
+            }
+            return sw;
+        },
+        eliminarDetalle(arr, item) {
+            var index = arr.indexOf(item);
+
+            if(index !== -1) {
+                arr.splice(index, 1);
+            }
         },
         listar() {
             let me = this;
