@@ -149,9 +149,9 @@
                                 </v-icon>
                         </td>
                         <td>{{ props.item.articulo }}</td>
-                        <td>{{ props.item.cantidad }}</td>
-                        <td>{{ props.item.precio}}</td>
-                        <td>{{ props.item.cantidad * props.item.precio }}</td>
+                        <td><v-text-field type="name" v-model="props.item.cantidad"></v-text-field></td>
+                        <td><v-text-field type="name" v-model="props.item.precio"></v-text-field></td>
+                        <td>$ {{ props.item.cantidad * props.item.precio }}</td>
                         
                         </template>
                         <template slot="no-data">
