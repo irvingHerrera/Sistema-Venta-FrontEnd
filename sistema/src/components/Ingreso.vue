@@ -170,7 +170,7 @@
               </v-flex>
               <v-flex xs12 sm4 md4 lg4 x14>
                   <v-text-field type="number" 
-                                v-model="serieComprobante" 
+                                v-model="impuesto" 
                                 label="Impuesto">
                   </v-text-field>
               </v-flex>
@@ -232,7 +232,7 @@
             
             <v-flex xs12 sm12 md12 lg12 x112>
                 <v-btn @click="ocultarNuevo" color="blue darken-1" flat>Cancelar</v-btn>
-                <v-btn color="success">Guardar</v-btn>
+                <v-btn @click="guardar" color="success">Guardar</v-btn>
             </v-flex>
 
           </v-layout>
@@ -272,11 +272,9 @@ export default {
             detalles: [
             ],
             search: '',
-            editedIndex: -1,
             id: '',
             idProveedor: '',
             proveedores: [],
-            tipoComprobate: '',
             comprobantes: [
                 'FACTURA', 'BOLETA', 'TICKET', 'GUIA'
             ],
@@ -340,6 +338,7 @@ export default {
         },
         ocultarNuevo() {
             this.verNuevo = 0;
+            this.limpiar();
         },
         buscarCodigo() {
             let me = this;
@@ -430,205 +429,150 @@ export default {
                 console.log(error);
             }) 
         }, 
-            editItem (item) {
-                console.log(item);
-                this.id = item.idUsuario;
-                this.idRol = item.idRol,
-                this.nombre = item.nombre;
-                this.tipoDocumento = item.tipoDocumento;
-                this.numDocumento = item.numDocumento;
-                this.direccion = item.direccion;
-                this.telefono = item.telefono;
-                this.email = item.email;
-                this.password = item.passwordHash;
-                this.passwordAnt = item.passwordHash;
-                this.stock = item.stock;
-                this.editedIndex = 1;
-                this.dialog = true
-            },
 
-            deleteItem (item) {
-                const index = this.desserts.indexOf(item)
-                confirm('Are you sure you want to delete this item?') && this.desserts.splice(index, 1)
-            },
+        limpiar() {
+            this.id = '';
+            this.idProveedor = '';
+            this.tipoComprobante = '';
+            this.serieComprobante = '';
+            this.numComprobante = '';
+            this.impuesto = 18;
+            this.codigo = '';
+            this.detalles = [];
+            this.total = 0;
+            this.totalImpuesto = 0;
+            this.totalParcial = 0;
+        },
 
-            close () {
-                this.dialog = false;
-                this.limpiar();
-            },
+        guardar () {
 
-            limpiar() {
-                this.id = '';
-                this.idRol = '';
-                this.tipoDocumento = '';
-                this.numDocumento = '';
-                this.nombre = '';
-                this.direccion = '';
-                this.telefono = '';
-                this.email = '';
-                this.password = '';
-                this.passwordAnt = '';
-                this.actPassword = false;
-                this.deleteItem =  '';
-                this.valida = 0;
-                this.editedIndex = -1;
-            },
+            if( this.validar()) {
+                return;
+            }
 
-            guardar () {
+            let promesa = {};
+            let me = this;
 
-                if( this.validar() === 1 ) {
-                    return;
-                }
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+            console.log(me.$store.state.usuario);
+            // codigo para guardar
+            promesa = axios.post('api/Ingreso/Crear', { 
+                'idProveedor': me.idProveedor,
+                'idUsuario': me.$store.state.usuario.idusuario,
+                'tipoComprobante': me.tipoComprobante,
+                'serieComprobante': me.serieComprobante,
+                'numComprobante': me.numComprobante,
+                'impuesto': me.impuesto,
+                'total': me.total,
+                'detalle': me.detalles
+                }, configuracion);
+                
 
-                let promesa = {};
-                let me = this;
+            promesa
+            .then(function (response) {
+                // eslint-disable-next-line
+                    console.log("response", response);
+                    me.ocultarNuevo()
+                    me.listar();
+                    me.limpiar();
+            })
+            // eslint-disable-next-line
+            .catch(function (error) {
+                // eslint-disable-next-line
+                console.log(error);
+            });
+        },
+        validar() {
 
-                let header={'Authorization': 'Bearer ' + this.$store.state.token};
-                let configuracion = {headers: header};
+            this.valida = 0;
+            this.validaMensaje = [];
 
-                if (this.editedIndex > -1) {
-                    // codigo para editar
-                    
-                    if ( me.password !== me.passwordAnt ) {
-                        me.actPassword = true;
-                    }
+            if( !this.idProveedor ) {
+                this.validaMensaje.push('Seleccione un proveedor.');
+            }
 
-                    promesa = axios.put('api/Usuario/Actualizar', { 
-                        'idUsuario': me.id,
-                        'idRol': me.idRol,
-                        'tipoDocumento': me.tipoDocumento,
-                        'numDocumento': me.numDocumento,
-                        'nombre': me.nombre,
-                        'direccion': me.direccion,
-                        'telefono': me.telefono,
-                        'email': me.email,
-                        'password': me.password,
-                        'act_password': me.actPassword
-                     }, configuracion);
-                } else {
-                    // codigo para guardar
-                    promesa = axios.post('api/Usuario/Crear', { 
-                        'idUsuario': '0',
-                        'idRol': me.idRol,
-                        'tipoDocumento': me.tipoDocumento,
-                        'numDocumento': me.numDocumento,
-                        'nombre': me.nombre,
-                        'direccion': me.direccion,
-                        'telefono': me.telefono,
-                        'email': me.email,
-                        'password': me.password
-                     }, configuracion);
-                    
-                }
+            if( !this.tipoComprobante ) {
+                this.validaMensaje.push('Seleccione un tipo de comprobante.');
+            }
 
-                promesa
-                .then(function (response) {
-                    // eslint-disable-next-line
-                        console.log("response", response);
-                        me.close();
-                        me.listar();
+            if( !this.numComprobante ) {
+                this.validaMensaje.push('Seleccione el impuesto valido.');
+            }
+
+            if( this.detalles.length <= 0 ) {
+                this.validaMensaje.push('Ingrese al menos un articulo al detalle.');
+            }
+            
+            if( this.validaMensaje.length ) {
+                this.valida = 1;
+            }
+
+            return this.valida;
+        },
+        activarDesactivarMostrar( accion, item ) {
+
+            this.adModal = 1;
+            this.adNombre = item.nombre;
+            this.adId = item.idUsuario
+
+            if ( accion === 1 ) {
+                this.adAccion = 1;
+            } else if ( accion === 2 ) {
+                this.adAccion = 2;
+            } else  {
+                this.adModal = 0;
+            }
+        },
+        activar () {
+            let me = this;
+
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+
+            axios
+            .put('api/Usuario/Activar/'+this.adId, { }, configuracion)
+                    .then(function (response) {
+                // eslint-disable-next-line
+                    console.log("response", response);
+                    me.adModal = 0;
+                    me.adAccion = 0;
+                    me.adNombre = '';
+                    me.adId = '';
+                    me.listar();
                 })
                 // eslint-disable-next-line
                 .catch(function (error) {
                     // eslint-disable-next-line
                     console.log(error);
                 });
-            },
-            validar() {
+        },
+        desactivar() {
+            let me = this;
 
-                this.valida = 0;
-                this.validaMensaje = [];
-                if( this.nombre.length < 3 || this.nombre.length > 100 ) {
-                    this.validaMensaje.push('El nombre debe tener mas de 3 caracteres y menos de 100 caracteres.');
-                }
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
 
-                if( !this.idRol ) {
-                    this.validaMensaje.push('Seleccione una rol.');
-                }
-
-                if( !this.tipoDocumento ) {
-                    this.validaMensaje.push('Seleccione una tipo de documento.');
-                }
-
-                if( !this.email ) {
-                    this.validaMensaje.push('Ingrese el correo del usuario.');
-                }
-
-
-                if( !this.password ) {
-                    this.validaMensaje.push('Ingrese el stock la contraeña del usuario.');
-                }
-
-                
-                if( this.validaMensaje.length ) {
-                    this.valida = 1;
-                }
-
-                return this.valida;
-            },
-            activarDesactivarMostrar( accion, item ) {
-
-                this.adModal = 1;
-                this.adNombre = item.nombre;
-                this.adId = item.idUsuario
-
-                if ( accion === 1 ) {
-                    this.adAccion = 1;
-                } else if ( accion === 2 ) {
-                    this.adAccion = 2;
-                } else  {
-                    this.adModal = 0;
-                }
-            },
-            activar () {
-                let me = this;
-
-                let header={'Authorization': 'Bearer ' + this.$store.state.token};
-                let configuracion = {headers: header};
-
-                axios
-                .put('api/Usuario/Activar/'+this.adId, { }, configuracion)
-                     .then(function (response) {
+            axios
+            .put('api/Usuario/Desactivar/'+this.adId, { }, configuracion)
+                    .then(function (response) {
+                // eslint-disable-next-line
+                    console.log("response", response);
+                    me.adModal = 0;
+                    me.adAccion = 0;
+                    me.adNombre = '';
+                    me.adId = '';
+                    me.listar();
+                })
+                // eslint-disable-next-line
+                .catch(function (error) {
                     // eslint-disable-next-line
-                        console.log("response", response);
-                        me.adModal = 0;
-                        me.adAccion = 0;
-                        me.adNombre = '';
-                        me.adId = '';
-                        me.listar();
-                    })
-                    // eslint-disable-next-line
-                    .catch(function (error) {
-                        // eslint-disable-next-line
-                        console.log(error);
-                    });
-            },
-            desactivar() {
-                let me = this;
-
-                let header={'Authorization': 'Bearer ' + this.$store.state.token};
-                let configuracion = {headers: header};
-
-                axios
-                .put('api/Usuario/Desactivar/'+this.adId, { }, configuracion)
-                     .then(function (response) {
-                    // eslint-disable-next-line
-                        console.log("response", response);
-                        me.adModal = 0;
-                        me.adAccion = 0;
-                        me.adNombre = '';
-                        me.adId = '';
-                        me.listar();
-                    })
-                    // eslint-disable-next-line
-                    .catch(function (error) {
-                        // eslint-disable-next-line
-                        console.log(error);
-                    });
-            },
-            activarDesactivarCerrar() {
-                this.adModal = 0;
-            }
+                    console.log(error);
+                });
+        },
+        activarDesactivarCerrar() {
+            this.adModal = 0;
+        }
     }
 }
 </script>
