@@ -13,6 +13,64 @@
         <v-text-field v-if="verNuevo===0" class="text-xs-center" v-model="search" append-icon="search" label="Búsqueda" single-line hide-details></v-text-field>
         <v-spacer></v-spacer>
          <v-btn v-if="verNuevo===0" @click="mostrarNuevo" color="primary" dark class="mb-2">Nuevo</v-btn>
+         <v-dialog v-model="verArticulo" max-width="1000px">
+             <v-card>
+                 <v-card-title>
+                     <span class="headline">Seleccione un articulo</span>
+                     <v-card-text>
+
+                         <v-container grid-list-md>
+                             <v-layout wrap>
+                                 <v-flex xs12 sm12 md12 lg12 xl12 >
+                                     <v-text-field append-icon="search" 
+                                        label="Ingrese articulo a buscar"
+                                        @keyup.enter="listarArticulo()"
+                                        class="text-xs-center" v-model="texto">
+
+                                        </v-text-field>
+                                    <template>
+                                        <v-data-table
+                                        :headers="cabeceraArticulo"
+                                        :items="articulos"
+                                        class="elevation-1">
+                                        
+                                            <template slot="items" slot-scope="props">
+                                                    <td class="justify-center layout px-0">
+                                                        <v-icon
+                                                        small
+                                                        class="mr-2"
+                                                        @click="agregarDetalle(props.item)"
+                                                        >
+                                                        add
+                                                        </v-icon>
+                                                </td>
+                                                <td>{{ props.item.nombre }}</td>
+                                                <td> {{props.item.categoria}}</td>
+                                                <td> {{props.item.descripcion}}</td>
+                                                <td> {{props.item.stock}}</td>
+                                                <td> {{props.item.precio}}</td>
+                                            
+                                            </template>
+                                            <template slot="no-data">
+                                                <h3>No hay articulos para mostrar</h3>
+                                            </template>
+                                    </v-data-table>
+                                    </template>
+                                 </v-flex>
+                             </v-layout>
+                         </v-container>
+
+                     </v-card-text>
+                     <v-card-actions>
+                         <v-spacer>
+                             <v-btn @click="ocultarArticulos()" color="blue darken" flat>
+                                 Cancelar
+                             </v-btn>
+                         </v-spacer>
+                     </v-card-actions>
+                 </v-card-title>
+             </v-card>
+         </v-dialog>
         <v-dialog v-model="adModal" max-width="400px">
             <v-card>
                 <v-card-title class="headline" v-if="adAccion==1">¿Activar Usuario?</v-card-title>
@@ -122,7 +180,7 @@
                   </v-text-field>
               </v-flex>
               <v-flex xs12 sm2 md2 lg2 x12>
-                  <v-btn small fab dark color="teal">
+                  <v-btn @click="mostrarArticulos()" small fab dark color="teal">
                       <v-icon dark>list</v-icon>
                   </v-btn>
               </v-flex>
@@ -232,6 +290,17 @@ export default {
             totalParcial: 0,
             totalImpuesto: 0,
             total: 0,
+            cabeceraArticulo: [
+                {text: 'Seleccionar', value: 'Seleccionar', soryable:false},
+                {text: 'Articulo', value: 'articulo'},
+                {text: 'Categoria', value: 'categoria'},
+                {text: 'Descripción', value: 'descripcion',soryable:false},
+                {text: 'Stock', value: 'stock', soryable:false},
+                {text: 'Precio Venta', value: 'precioVenta', soryable:false},
+            ],
+            articulos: [],
+            texto: '',
+            verArticulo: 0,
             nombre: '',
             valida: 0,
             validaMensaje: [],
@@ -285,6 +354,23 @@ export default {
                 me.errorArticulo = 'No existe el articulo';
             }) 
         }, 
+        listarArticulo() {
+            let me = this;
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+            axios.get('api/Articulo/ListarIngreso/'+ me.texto, configuracion)
+            .then(function (resp) {
+                me.articulos = resp.data;
+            }).catch( function (error) {
+                console.log(error);
+            }) 
+        },
+        mostrarArticulos() {
+            this.verArticulo = 1;
+        },
+        ocultarArticulos() {
+            this.verArticulo = 0;
+        },
         agregarDetalle(data = []) {
             this.errorArticulo = null;
             if( this.encuentra(data['idArticulo']) ) {
