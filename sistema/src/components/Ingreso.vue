@@ -136,8 +136,7 @@
                         :headers="cabeceraDetalle"
                         :items="detalles"
                         hide-actions
-                        class="elevation-1"
-                    >
+                        class="elevation-1">
                         <template slot="items" slot-scope="props">
                             <td class="justify-center layout px-0">
                                 <v-icon
@@ -158,6 +157,15 @@
                             <h3>No hay articulos agregados al detalle</h3>
                         </template>
                     </v-data-table>
+                    <v-flex class="text-xs-right">
+                        <strong>Total Parcial:</strong> $ {{totalParcial = (total - totalImpuesto).toFixed(2)}}
+                    </v-flex>
+                    <v-flex class="text-xs-right">
+                        <strong>Total Impuesto:</strong> $ {{totalImpuesto= ((total*impuesto)/(100+impuesto)).toFixed(2)}}
+                    </v-flex>
+                    <v-flex class="text-xs-right">
+                        <strong>Total Neto:</strong> $ {{total=(calcularTotal).toFixed(2)}}
+                    </v-flex>
               </v-flex>
 
             <v-flex xs12 sm12 md12 lg12 x112>
@@ -221,6 +229,9 @@ export default {
             codigo: '',
             verNuevo: 0,
             errorArticulo: null,
+            totalParcial: 0,
+            totalImpuesto: 0,
+            total: 0,
             nombre: '',
             valida: 0,
             validaMensaje: [],
@@ -231,8 +242,14 @@ export default {
         }
     },
         computed: {
-        formTitle () {
-        return this.editedIndex === -1 ? 'Nueva Usuario' : 'Actualizando Usuario'
+        calcularTotal() {
+            var resultado = 0;
+
+            for(var i=0; i<this.detalles.length;i++) { 
+                resultado = resultado + (this.detalles[i].precio*this.detalles[i].cantidad);
+            }
+
+            return resultado;
         }
     },
 
