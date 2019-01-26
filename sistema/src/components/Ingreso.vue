@@ -108,9 +108,9 @@
                 <v-icon
                 small
                 class="mr-2"
-                @click="editItem(props.item)"
+                @click="varDetalles(props.item)"
                 >
-                edit
+                tab
                 </v-icon>
                 <template v-if="props.item.estado == 'Aceptado'">
                     <v-icon
@@ -232,7 +232,7 @@
             
             <v-flex xs12 sm12 md12 lg12 x112>
                 <v-btn @click="ocultarNuevo" color="blue darken-1" flat>Cancelar</v-btn>
-                <v-btn @click="guardar" color="success">Guardar</v-btn>
+                <v-btn v-if="verDef==0" @click="guardar" color="success">Guardar</v-btn>
             </v-flex>
 
           </v-layout>
@@ -299,6 +299,7 @@ export default {
             articulos: [],
             texto: '',
             verArticulo: 0,
+            varDet: 0,
             nombre: '',
             valida: 0,
             validaMensaje: [],
@@ -413,6 +414,28 @@ export default {
                 console.log(error);
             }) 
         }, 
+        listarDetalles(id) {
+            let me = this;
+            let header={'Authorization': 'Bearer ' + this.$store.state.token};
+            let configuracion = {headers: header};
+            axios.get('api/Ingreso/ListarDetalles/'+id, configuracion)
+            .then(function (resp) {
+                me.detalles = resp.data;
+            }).catch( function (error) {
+                console.log(error);
+            }) 
+        },
+        varDetalles(item) {
+            this.limpiar();
+            this.tipoComprobante = item.tipoComprobante;
+            this.serieComprobante = item.serieComprobante;
+            this.numComprobante = item.numComprobante;
+            this.idProveedor = item.idProveedor;
+            this.impuesto = item.impuesto;
+            this.listarDetalles(item.idIngreso);
+            this.verNuevo = 1;
+            this.varDet = 1;
+        },
         select() {
             let me = this;
             let proveedoresArray = [];
@@ -442,6 +465,7 @@ export default {
             this.total = 0;
             this.totalImpuesto = 0;
             this.totalParcial = 0;
+            this.varDet = 0;
         },
 
         guardar () {
