@@ -11,6 +11,7 @@
         ></v-divider>
         <v-spacer></v-spacer>
         <v-text-field v-if="verNuevo===0" class="text-xs-center" v-model="search" append-icon="search" label="Búsqueda" single-line hide-details></v-text-field>
+        <v-btn v-if="verNuevo===0" @click="listar" color="primary" dark class="mb-2">Buscar</v-btn>
         <v-spacer></v-spacer>
          <v-btn v-if="verNuevo===0" @click="mostrarNuevo" color="primary" dark class="mb-2">Nuevo</v-btn>
          <v-dialog v-model="verArticulo" max-width="1000px">
@@ -400,7 +401,13 @@ export default {
             let me = this;
             let header={'Authorization': 'Bearer ' + this.$store.state.token};
             let configuracion = {headers: header};
-            axios.get('api/Ingreso/Listar', configuracion)
+            let url = '';
+            if ( !me.search ) {
+                 url = 'api/Ingreso/Listar';               
+            } else {
+                url = 'api/Ingreso/ListarFiltro/'+me.search;
+            }
+            axios.get(url, configuracion)
             .then(function (resp) {
                 me.ingresos = resp.data;
             }).catch( function (error) {
