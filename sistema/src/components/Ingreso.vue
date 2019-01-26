@@ -73,13 +73,13 @@
          </v-dialog>
         <v-dialog v-model="adModal" max-width="400px">
             <v-card>
-                <v-card-title class="headline" v-if="adAccion==1">¿Activar Usuario?</v-card-title>
-                <v-card-title class="headline" v-if="adAccion==2">Desactivar Usuario?</v-card-title>
+                <v-card-title class="headline" v-if="adAccion==1">¿Activar Ingreso?</v-card-title>
+                <v-card-title class="headline" v-if="adAccion==2">Anular Ingreso?</v-card-title>
                 <v-card-text>
                     Estás a punto de 
                     <span v-if="adAccion==1">Activar</span>
-                    <span v-if="adAccion==2">Desactivar</span>
-                    el usuario {{ adNombre }}
+                    <span v-if="adAccion==2">Anular</span>
+                    el ingreso {{ adNombre }}
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -90,7 +90,7 @@
                         Activar
                     </v-btn>
                     <v-btn v-if="adAccion==2" color="orange darken-4" flat="flat" @click="desactivar">
-                        Desactivar
+                        Anular
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -117,13 +117,6 @@
                         small
                         @click="activarDesactivarMostrar(2, props.item)">
                         block
-                    </v-icon>
-                </template>
-                <template v-else>
-                    <v-icon
-                        small
-                        @click="activarDesactivarMostrar(1, props.item)">
-                        check
                     </v-icon>
                 </template>
                 
@@ -537,8 +530,8 @@ export default {
         activarDesactivarMostrar( accion, item ) {
 
             this.adModal = 1;
-            this.adNombre = item.nombre;
-            this.adId = item.idUsuario
+            this.adNombre = item.numComprobante;
+            this.adId = item.idIngreso
 
             if ( accion === 1 ) {
                 this.adAccion = 1;
@@ -578,7 +571,7 @@ export default {
             let configuracion = {headers: header};
 
             axios
-            .put('api/Usuario/Desactivar/'+this.adId, { }, configuracion)
+            .put('api/Ingreso/Anular/'+this.adId, { }, configuracion)
                     .then(function (response) {
                 // eslint-disable-next-line
                     console.log("response", response);
