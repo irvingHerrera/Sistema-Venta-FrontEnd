@@ -9,6 +9,7 @@ import Cliente from './components/Cliente.vue';
 import Proveedor from './components/Proveedor.vue';
 import Login from './components/Login.vue';
 import Ingreso from './components/Ingreso.vue';
+import Venta from './components/Venta.vue';
 import store from './store';
 
 
@@ -96,6 +97,15 @@ var router = new Router({
                 almacenero: true
             }
         },
+        {
+            path: '/venta',
+            name: 'venta',
+            component: Venta,
+            meta: {
+                administrador: true,
+                vendedor: true
+            }
+        },
     ]
 })
 
@@ -121,4 +131,4 @@ router.beforeEach((to, from, next) => {
     }
 })
 
-export default router
+export default router;
