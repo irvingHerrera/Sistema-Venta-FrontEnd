@@ -158,8 +158,8 @@
                   <v-text-field v-model="numComprobante" label="Número Comprobante"></v-text-field>
               </v-flex>
               <v-flex xs12 sm4 md4 lg4 x14>
-                  <v-select v-model="idProveedor"
-                    :items="proveedores" label="Proveedor">
+                  <v-select v-model="idCliente"
+                    :items="clientes" label="Cliente">
                   </v-select>
               </v-flex>
               <v-flex xs12 sm4 md4 lg4 x14>
@@ -200,9 +200,10 @@
                                 </v-icon>
                         </td>
                         <td>{{ props.item.articulo }}</td>
-                        <td><v-text-field type="name" v-model="props.item.cantidad"></v-text-field></td>
-                        <td><v-text-field type="name" v-model="props.item.precio"></v-text-field></td>
-                        <td>$ {{ props.item.cantidad * props.item.precio }}</td>
+                        <td><v-text-field type="number" v-model="props.item.cantidad"></v-text-field></td>
+                        <td><v-text-field type="number" v-model="props.item.precio"></v-text-field></td>
+                        <td><v-text-field type="number" v-model="props.item.descuento"></v-text-field></td>
+                        <td>$ {{ props.item.cantidad * props.item.precio - props.item.descuento }}</td>
                         
                         </template>
                         <template slot="no-data">
@@ -260,6 +261,7 @@ export default {
                 { text: 'Articulo', value: 'articulo', sortable: false  },
                 { text: 'Cantidad', value: 'cantidad', sortable: false  },
                 { text: 'Precio', value: 'precio', sortable: false  },
+                { text: 'Descuento', value: 'descuento', sortable: false  },
                 { text: 'SubTotal', value: 'subtotal', sortable: false },
 
             ],
@@ -267,8 +269,8 @@ export default {
             ],
             search: '',
             id: '',
-            idProveedor: '',
-            proveedores: [],
+            idCliente: '',
+            clientes: [],
             comprobantes: [
                 'FACTURA', 'BOLETA', 'TICKET', 'GUIA'
             ],
@@ -438,14 +440,14 @@ export default {
         },
         select() {
             let me = this;
-            let proveedoresArray = [];
+            let clientesArray = [];
             let header={'Authorization': 'Bearer ' + this.$store.state.token};
             let configuracion = {headers: header};
-            axios.get('api/Persona/SelectProveedor', configuracion)
+            axios.get('api/Persona/SelectCliente', configuracion)
             .then(function (resp) {
-                proveedoresArray = resp.data;
-                proveedoresArray.map(function(pro) {
-                    me.proveedores.push({text: pro.nombre, value: pro.idPersona});
+                clientesArray = resp.data;
+                clientesArray.map(function(clie) {
+                    me.clientes.push({text: clie.nombre, value: clie.idPersona});
                 });
                 console.log(resp);
             }).catch( function (error) {
