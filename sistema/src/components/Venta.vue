@@ -458,7 +458,7 @@ export default {
 
         limpiar() {
             this.id = '';
-            this.idProveedor = '';
+            this.idCliente = '';
             this.tipoComprobante = '';
             this.serieComprobante = '';
             this.numComprobante = '';
@@ -484,8 +484,8 @@ export default {
             let configuracion = {headers: header};
             console.log(me.$store.state.usuario);
             // codigo para guardar
-            promesa = axios.post('api/Ingreso/Crear', { 
-                'idProveedor': me.idProveedor,
+            promesa = axios.post('api/Venta/Crear', { 
+                'idCliente': me.idCliente,
                 'idUsuario': me.$store.state.usuario.idusuario,
                 'tipoComprobante': me.tipoComprobante,
                 'serieComprobante': me.serieComprobante,
@@ -515,8 +515,8 @@ export default {
             this.valida = 0;
             this.validaMensaje = [];
 
-            if( !this.idProveedor ) {
-                this.validaMensaje.push('Seleccione un proveedor.');
+            if( !this.idCliente ) {
+                this.validaMensaje.push('Seleccione un cliente.');
             }
 
             if( !this.tipoComprobante ) {
