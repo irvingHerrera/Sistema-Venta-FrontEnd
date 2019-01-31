@@ -74,13 +74,13 @@
          </v-dialog>
         <v-dialog v-model="adModal" max-width="400px">
             <v-card>
-                <v-card-title class="headline" v-if="adAccion==1">¿Activar Ingreso?</v-card-title>
-                <v-card-title class="headline" v-if="adAccion==2">Anular Ingreso?</v-card-title>
+                <v-card-title class="headline" v-if="adAccion==1">¿Activar Venta?</v-card-title>
+                <v-card-title class="headline" v-if="adAccion==2">Anular Venta?</v-card-title>
                 <v-card-text>
                     Estás a punto de 
                     <span v-if="adAccion==1">Activar</span>
                     <span v-if="adAccion==2">Anular</span>
-                    el ingreso {{ adNombre }}
+                    la venta {{ adNombre }}
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -541,7 +541,7 @@ export default {
 
             this.adModal = 1;
             this.adNombre = item.numComprobante;
-            this.adId = item.idIngreso
+            this.adId = item.idVenta;
 
             if ( accion === 1 ) {
                 this.adAccion = 1;
@@ -581,7 +581,7 @@ export default {
             let configuracion = {headers: header};
 
             axios
-            .put('api/Ingreso/Anular/'+this.adId, { }, configuracion)
+            .put('api/Venta/Anular/'+this.adId, { }, configuracion)
                     .then(function (response) {
                 // eslint-disable-next-line
                     console.log("response", response);
