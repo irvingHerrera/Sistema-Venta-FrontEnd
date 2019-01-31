@@ -227,7 +227,7 @@
             
             <v-flex xs12 sm12 md12 lg12 x112>
                 <v-btn @click="ocultarNuevo" color="blue darken-1" flat>Cancelar</v-btn>
-                <v-btn v-if="verDef==0" @click="guardar" color="success">Guardar</v-btn>
+                <v-btn v-if="verDet==0" @click="guardar" color="success">Guardar</v-btn>
             </v-flex>
 
           </v-layout>
@@ -295,7 +295,7 @@ export default {
             articulos: [],
             texto: '',
             verArticulo: 0,
-            varDet: 0,
+            verDet: 0,
             nombre: '',
             valida: 0,
             validaMensaje: [],
@@ -306,11 +306,11 @@ export default {
         }
     },
         computed: {
-        calcularTotal() {
+        calcularTotal: function () {
             var resultado = 0;
 
             for(var i=0; i<this.detalles.length;i++) { 
-                resultado = resultado + (this.detalles[i].precio*this.detalles[i].cantidad);
+                resultado = resultado + (this.detalles[i].precio*this.detalles[i].cantidad - this.detalles[i].descuento);
             }
 
             return resultado;
@@ -342,7 +342,7 @@ export default {
             me.errorArticulo = null;
             let header={'Authorization': 'Bearer ' + this.$store.state.token};
             let configuracion = {headers: header};
-            axios.get('api/Articulo/BuscarCodigoIngreso/'+this.codigo, configuracion)
+            axios.get('api/Articulo/BuscarCodigoVenta/'+this.codigo, configuracion)
             .then(function (resp) {
                 me.agregarDetalle(resp.data);
             }).catch( function (error) {
@@ -354,7 +354,7 @@ export default {
             let me = this;
             let header={'Authorization': 'Bearer ' + this.$store.state.token};
             let configuracion = {headers: header};
-            axios.get('api/Articulo/ListarIngreso/'+ me.texto, configuracion)
+            axios.get('api/Articulo/ListarVenta/'+ me.texto, configuracion)
             .then(function (resp) {
                 me.articulos = resp.data;
             }).catch( function (error) {
@@ -377,7 +377,8 @@ export default {
                     idArticulo: data['idArticulo'],
                     articulo: data['nombre'],
                     cantidad: 1,
-                    precio: 1
+                    precio: data['precioVenta'],
+                    descuento: 0
                 }
             );
             }
@@ -436,7 +437,7 @@ export default {
             this.impuesto = item.impuesto;
             this.listarDetalles(item.idIngreso);
             this.verNuevo = 1;
-            this.varDet = 1;
+            this.verDet = 1;
         },
         select() {
             let me = this;
@@ -467,7 +468,7 @@ export default {
             this.total = 0;
             this.totalImpuesto = 0;
             this.totalParcial = 0;
-            this.varDet = 0;
+            this.verDet = 0;
         },
 
         guardar () {

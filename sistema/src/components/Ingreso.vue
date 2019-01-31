@@ -226,7 +226,7 @@
             
             <v-flex xs12 sm12 md12 lg12 x112>
                 <v-btn @click="ocultarNuevo" color="blue darken-1" flat>Cancelar</v-btn>
-                <v-btn v-if="verDef==0" @click="guardar" color="success">Guardar</v-btn>
+                <v-btn v-if="verDet==0" @click="guardar" color="success">Guardar</v-btn>
             </v-flex>
 
           </v-layout>
@@ -293,7 +293,7 @@ export default {
             articulos: [],
             texto: '',
             verArticulo: 0,
-            varDet: 0,
+            verDet: 0,
             nombre: '',
             valida: 0,
             validaMensaje: [],
@@ -304,7 +304,7 @@ export default {
         }
     },
         computed: {
-        calcularTotal() {
+        calcularTotal:function () {
             var resultado = 0;
 
             for(var i=0; i<this.detalles.length;i++) { 
@@ -434,7 +434,7 @@ export default {
             this.impuesto = item.impuesto;
             this.listarDetalles(item.idIngreso);
             this.verNuevo = 1;
-            this.varDet = 1;
+            this.verDet=1;
         },
         select() {
             let me = this;
@@ -465,7 +465,7 @@ export default {
             this.total = 0;
             this.totalImpuesto = 0;
             this.totalParcial = 0;
-            this.varDet = 0;
+            this.verDet=1;
         },
 
         guardar () {
