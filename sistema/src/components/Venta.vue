@@ -421,7 +421,7 @@ export default {
             let me = this;
             let header={'Authorization': 'Bearer ' + this.$store.state.token};
             let configuracion = {headers: header};
-            axios.get('api/Ingreso/ListarDetalles/'+id, configuracion)
+            axios.get('api/Venta/ListarDetalles/'+id, configuracion)
             .then(function (resp) {
                 me.detalles = resp.data;
             }).catch( function (error) {
@@ -433,9 +433,9 @@ export default {
             this.tipoComprobante = item.tipoComprobante;
             this.serieComprobante = item.serieComprobante;
             this.numComprobante = item.numComprobante;
-            this.idProveedor = item.idProveedor;
+            this.idCliente = item.idCliente;
             this.impuesto = item.impuesto;
-            this.listarDetalles(item.idIngreso);
+            this.listarDetalles(item.idVenta);
             this.verNuevo = 1;
             this.verDet = 1;
         },
