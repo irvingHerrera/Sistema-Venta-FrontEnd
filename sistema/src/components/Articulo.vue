@@ -4,6 +4,9 @@
         <v-flex>
                   <v-toolbar flat color="white">
         <v-toolbar-title>Articulos</v-toolbar-title>
+        <v-btn @click="crearPDF()">
+            <v-icon>print</v-icon>
+        </v-btn>
         <v-divider
           class="mx-2"
           inset
@@ -139,6 +142,9 @@
 
 <script>
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 export default {
     data() {
         return {
@@ -190,6 +196,38 @@ export default {
     },
     methods: {
         /* eslint-disable */
+
+        crearPDF() {
+
+            var columnsTable = [
+                ['Nombre',
+                'Código',
+                'Categoria',
+                'Stock',
+                'Precio Venta']
+            ];
+
+            var rows = [];
+            console.log('this.articulos', this.articulos);
+            this.articulos.map(function(a) {
+                rows.push([
+                    a.nombre,
+                    a.codigo,
+                    a.categoria,
+                    a.stock,
+                    a.precioVenta
+                ]);
+            });
+ console.log('this.rows', rows);
+            var doc = new jsPDF('p', 'pt');
+            doc.autoTable({
+                    margin: {top: 60},
+                    body: rows,
+                    head: columnsTable
+            });
+
+            doc.save('Articulos.pdf');
+        },
         listar() {
             let me = this;
 
